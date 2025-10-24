@@ -1,22 +1,36 @@
 # QuantAxis CTP Market Data Gateway (qactpmdgateway)
 
+**作者**: @yutiansut @quantaxis
+**版本**: v2.0.0
+**最后更新**: 2025-10-24
+
 ## 📖 项目概述
 
 基于CTP API的高性能期货行情数据WebSocket服务器，提供实时行情数据分发服务。该项目是QuantAxis交易网关系统的独立行情模块，专门负责期货市场数据的接入、处理和分发。
 
+**核心定位**: 作为 QuantAxis QIFI 体系的市场数据层组件，与 MongoDB QIFI 数据结构无缝集成，为策略层提供实时、高性能的行情数据流。
+
 ### 🎯 核心特性
+
+#### 数据接入层
 - **🔥 多CTP连接管理**: 支持同时连接90+期货公司，覆盖全国主要期货交易商
 - **⚡ 智能负载均衡**: 4种负载均衡策略，支持25000+合约并发订阅
 - **🛡️ 故障自动转移**: 连接断开时自动迁移订阅到其他可用连接
 - **📊 海量订阅支持**: 单一系统支持数万个合约的实时行情订阅
 - **🚀 高性能架构**: 异步I/O + 连接池 + 智能分发，毫秒级延迟
-- **💾 Redis数据缓存**: 集成Redis存储，提供行情数据持久化
-- **🔧 灵活配置管理**: JSON配置文件，支持动态添加期货公司连接
+
+#### 数据分发层
 - **📡 WebSocket服务**: 基于Boost.Beast的高性能WebSocket服务器
 - **🧠 智能订阅管理**: 增量订阅机制，避免重复CTP订阅，提高系统效率
 - **👥 多客户端支持**: 支持多个WebSocket客户端同时连接，精准推送
+- **💾 Redis数据缓存**: 集成Redis存储，提供行情数据持久化
+- **🔧 灵活配置管理**: JSON配置文件，支持动态添加期货公司连接
+
+#### QIFI体系集成
 - **💽 独立共享内存**: 使用专用共享内存段`qamddata`，与主项目解耦
-- **🔗 数据结构兼容**: 与主项目instrument数据结构完全兼容
+- **🔗 数据结构兼容**: 与QuantAxis QIFI数据结构完全兼容
+- **📝 MongoDB同步**: 支持与QIFI MongoDB数据库同步，保持数据一致性
+- **🎯 策略层支持**: 为Python/C++策略层提供实时市场数据接口
 
 ## 🏗️ 系统架构
 
@@ -24,6 +38,7 @@
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                          多CTP连接管理系统                                  │
+│                         (90+期货公司连接池)                                 │
 └─────────────────────────────────────────────────────────────────────────────┘
                                       │
         ┌─────────────────────────────┼─────────────────────────────┐
@@ -50,16 +65,33 @@
                     └─────────┬──────────────────┘
                               │
                     ┌─────────▼─────────┐
-                    │   WebSocket       │
-                    │   服务器 (7799)   │
-                    │   多客户端连接    │
+                    │   MarketDataServer│
+                    │   核心协调层       │
                     └─────────┬─────────┘
                               │
-                    ┌─────────▼─────────┐
-                    │   Redis缓存       │
-                    │   + 共享内存      │
-                    │   (qamddata)      │
-                    └───────────────────┘
+                ┌─────────────┼─────────────┐
+                │             │             │
+        ┌───────▼───────┐ ┌──▼───────┐ ┌──▼──────────┐
+        │  WebSocket    │ │  Redis   │ │ 共享内存    │
+        │  服务器       │ │  缓存层  │ │ (qamddata)  │
+        │  (7799)       │ │          │ │             │
+        └───────┬───────┘ └──┬───────┘ └──┬──────────┘
+                │            │            │
+        ┌───────▼────────────▼────────────▼───────┐
+        │          数据分发与存储层                │
+        │                                          │
+        │  • WebSocket实时推送 (JSON格式)          │
+        │  • Redis最新行情 (String)                │
+        │  • Redis历史Tick (ZSet时间序列)          │
+        │  • 共享内存快速访问                      │
+        └──────────────────────────────────────────┘
+                              │
+                ┌─────────────┼─────────────┐
+                │             │             │
+        ┌───────▼───────┐ ┌──▼───────┐ ┌──▼──────────┐
+        │  WebSocket    │ │ Python   │ │   C++       │
+        │  客户端       │ │ 策略层   │ │  策略层     │
+        └───────────────┘ └──────────┘ └─────────────┘
 ```
 
 ### 核心组件
@@ -105,12 +137,19 @@
   - 订阅列表维护
   - 异步消息发送
 
-#### 6. RedisClient (Redis缓存客户端) 🆕
-- **职责**: 行情数据的持久化存储和缓存
-- **功能**:
-  - 实时行情数据写入Redis
-  - 历史数据查询支持
-  - 缓存失效和更新策略
+#### 6. RedisClient (Redis缓存客户端) ✅
+- **职责**: 行情数据的持久化存储和时间序列管理
+- **核心功能**:
+  - **实时数据存储**: 每个合约最新行情数据实时更新到Redis (key格式: `instrument_id`)
+  - **历史数据存储**: 使用ZSet存储历史tick数据 (key格式: `history:instrument_id`)
+  - **时间序列索引**: 使用timestamp_ms作为ZSet的score，支持时间范围查询
+  - **自动过期清理**: 历史数据超过10万条时，自动清理2天前的旧数据
+  - **连接池管理**: 线程安全的Redis连接管理，支持自动重连
+- **数据格式**: JSON格式存储，与WebSocket推送格式完全一致
+- **支持操作**:
+  - String: `SET/GET/EXISTS/DEL`
+  - Hash: `HSET/HGET/HGETALL`
+  - ZSet: `ZADD/ZCARD/ZREMRANGEBYSCORE` (用于时间序列)
 
 ### 技术栈
 - **C++17**: 现代C++特性，智能指针、移动语义
@@ -119,6 +158,7 @@
 - **Boost.Interprocess**: 跨进程共享内存
 - **RapidJSON**: 高性能JSON解析库
 - **CTP API**: 上期技术期货交易API
+- **Hiredis**: Redis C客户端库，支持连接池和线程安全
 
 ## 📋 技术路线
 
@@ -186,7 +226,16 @@ sudo apt-get install -y \
     libboost-all-dev \
     libssl-dev \
     libcurl4-openssl-dev \
-    rapidjson-dev
+    rapidjson-dev \
+    libhiredis-dev \
+    redis-server
+
+# 启动Redis服务
+sudo systemctl start redis-server
+sudo systemctl enable redis-server
+
+# 验证Redis安装
+redis-cli ping  # 应返回 PONG
 ```
 
 ### 编译部署
@@ -245,8 +294,8 @@ nohup ./bin/market_data_server --multi-ctp > logs/server.log 2>&1 &
 ```json
 {
   "websocket_port": 7799,
-  "redis_host": "192.168.2.27", 
-  "redis_port": 6379,
+  "redis_host": "192.168.2.27",   // Redis服务器地址
+  "redis_port": 6379,              // Redis端口
   "load_balance_strategy": "connection_quality",
   "health_check_interval": 30,
   "maintenance_interval": 60,
@@ -360,7 +409,109 @@ ws://hostname:7799/
 
 ### 消息协议
 
-#### 1. 订阅行情数据
+系统支持两种WebSocket协议格式，完全兼容：
+
+---
+
+## 🆕 协议一：aid格式（推荐，兼容QuantAxis QIFI体系）
+
+### 1. 订阅行情数据
+**请求格式:**
+```json
+{
+  "aid": "subscribe_quote",
+  "ins_list": "rb2501,i2501,au2512"
+}
+```
+
+**响应格式:**
+```json
+{
+  "aid": "subscribe_quote",
+  "status": "ok"
+}
+```
+
+**说明:**
+- `ins_list`: 逗号分隔的合约列表
+- 支持交易所前缀（如 `SHFE.rb2501`），系统会自动去除前缀
+- 兼容QuantAxis mdservice协议
+
+### 2. 获取行情数据（长轮询）
+**请求格式:**
+```json
+{
+  "aid": "peek_message"
+}
+```
+
+**响应格式（完整数据）:**
+```json
+{
+  "aid": "rtn_data",
+  "data": [
+    {
+      "quotes": {
+        "rb2501": {
+          "instrument_id": "rb2501",
+          "datetime": "2025-10-24 14:30:15.500",
+          "last_price": 4180.0,
+          "volume": 12580,
+          "ask_price1": 4180.0,
+          "ask_volume1": 8,
+          "bid_price1": 4179.0,
+          "bid_volume1": 10,
+          "open_interest": 156890.0,
+          "...": "..."
+        },
+        "i2501": {
+          "...": "..."
+        }
+      }
+    },
+    {
+      "account_id": "",
+      "ins_list": "",
+      "mdhis_more_data": false
+    }
+  ]
+}
+```
+
+**响应格式（增量数据）:**
+```json
+{
+  "aid": "rtn_data",
+  "data": [
+    {
+      "quotes": {
+        "rb2501": {
+          "last_price": 4181.0,
+          "volume": 12590
+        }
+      }
+    },
+    {
+      "account_id": "",
+      "ins_list": "",
+      "mdhis_more_data": false
+    }
+  ]
+}
+```
+
+**说明:**
+- `peek_message` 实现长轮询机制
+- 首次请求返回所有订阅合约的完整数据
+- 后续请求只返回发生变化的字段（diff机制）
+- 如果没有数据变化，服务器会挂起请求，直到有新数据才返回
+- 实现了高效的增量推送机制
+
+---
+
+## 协议二：action格式（兼容性协议）
+
+### 1. 订阅行情数据
 **请求格式:**
 ```json
 {
@@ -374,12 +525,11 @@ ws://hostname:7799/
 {
   "type": "subscribe_response",
   "status": "success",
-  "subscribed_count": 3,
-  "message": "Successfully subscribed to 3 instruments"
+  "subscribed_count": 3
 }
 ```
 
-#### 2. 取消订阅
+### 2. 取消订阅
 **请求格式:**
 ```json
 {
@@ -391,17 +541,17 @@ ws://hostname:7799/
 **响应格式:**
 ```json
 {
-  "type": "unsubscribe_response", 
+  "type": "unsubscribe_response",
   "status": "success",
-  "unsubscribed_count": 1
+  "subscribed_count": 2
 }
 ```
 
-#### 3. 查询合约列表
+### 3. 查询合约列表
 **请求格式:**
 ```json
 {
-  "action": "list"
+  "action": "list_instruments"
 }
 ```
 
@@ -414,7 +564,7 @@ ws://hostname:7799/
 }
 ```
 
-#### 4. 搜索合约
+### 4. 搜索合约
 **请求格式:**
 ```json
 {
@@ -433,7 +583,7 @@ ws://hostname:7799/
 }
 ```
 
-#### 5. 实时行情数据
+### 5. 实时行情数据（自动推送）
 **推送格式:**
 ```json
 {
@@ -470,6 +620,287 @@ ws://hostname:7799/
   "action_day": "20231201",
   "timestamp": 1701398415500
 }
+```
+
+### 协议使用建议
+
+| 协议类型 | 推荐场景 | 优势 |
+|---------|---------|------|
+| **aid协议** | QuantAxis策略、QIFI体系集成 | 增量推送、长轮询、兼容mdservice |
+| **action协议** | 第三方客户端、实时推送场景 | 简单直观、主动推送 |
+
+### Python客户端示例
+
+#### aid协议示例（长轮询模式）
+```python
+import asyncio
+import websockets
+import json
+
+async def aid_protocol_client():
+    """使用aid协议的长轮询客户端"""
+    uri = "ws://localhost:7799"
+
+    async with websockets.connect(uri) as websocket:
+        # 1. 订阅合约
+        subscribe_msg = {
+            "aid": "subscribe_quote",
+            "ins_list": "rb2501,i2501,au2512"
+        }
+        await websocket.send(json.dumps(subscribe_msg))
+        response = await websocket.recv()
+        print(f"订阅响应: {response}")
+
+        # 2. 长轮询获取行情数据
+        while True:
+            peek_msg = {"aid": "peek_message"}
+            await websocket.send(json.dumps(peek_msg))
+
+            # 服务器会在有数据变化时才返回（长轮询）
+            response = await websocket.recv()
+            data = json.loads(response)
+
+            if data.get("aid") == "rtn_data":
+                quotes = data["data"][0]["quotes"]
+                for instrument_id, quote in quotes.items():
+                    print(f"{instrument_id}: {quote.get('last_price', 'N/A')}")
+
+# 运行
+asyncio.run(aid_protocol_client())
+```
+
+#### action协议示例（主动推送模式）
+```python
+import asyncio
+import websockets
+import json
+
+async def action_protocol_client():
+    """使用action协议的主动推送客户端"""
+    uri = "ws://localhost:7799"
+
+    async with websockets.connect(uri) as websocket:
+        # 1. 订阅合约
+        subscribe_msg = {
+            "action": "subscribe",
+            "instruments": ["rb2501", "i2501", "au2512"]
+        }
+        await websocket.send(json.dumps(subscribe_msg))
+
+        # 2. 接收服务器主动推送的行情数据
+        async for message in websocket:
+            data = json.loads(message)
+
+            if data.get("type") == "market_data":
+                print(f"{data['instrument_id']}: {data['last_price']}")
+            elif data.get("type") == "subscribe_response":
+                print(f"订阅成功: {data['subscribed_count']} 个合约")
+
+# 运行
+asyncio.run(action_protocol_client())
+```
+
+## 💾 Redis数据存储与查询
+
+### Redis数据架构
+
+系统将行情数据实时存储到Redis，提供两种数据访问模式：
+
+#### 1. 最新行情数据 (String类型)
+```bash
+# 数据结构
+Key: {instrument_id}           # 例如: "rb2601"
+Value: {JSON格式的完整行情数据}
+TTL: 永久存储 (每次更新覆盖)
+
+# Redis查询示例
+redis-cli get rb2601
+redis-cli get i2501
+redis-cli exists au2512
+```
+
+#### 2. 历史Tick数据 (ZSet类型)
+```bash
+# 数据结构
+Key: history:{instrument_id}   # 例如: "history:rb2601"
+Score: timestamp_ms            # 毫秒级时间戳作为排序依据
+Member: {JSON格式的完整行情数据}
+自动清理: 超过10万条记录时，删除2天前的数据
+
+# Redis查询示例 - 按时间范围查询
+# 查询最近100条tick
+redis-cli ZREVRANGE history:rb2601 0 99 WITHSCORES
+
+# 按时间范围查询 (timestamp_ms)
+redis-cli ZRANGEBYSCORE history:rb2601 1701398400000 1701484800000
+
+# 统计历史数据量
+redis-cli ZCARD history:rb2601
+```
+
+### Python查询示例
+
+```python
+import redis
+import json
+from datetime import datetime, timedelta
+
+# 连接Redis
+r = redis.Redis(host='192.168.2.27', port=6379, decode_responses=True)
+
+# 1. 获取最新行情
+def get_latest_quote(instrument_id):
+    data = r.get(instrument_id)
+    if data:
+        return json.loads(data)
+    return None
+
+# 2. 获取历史Tick数据
+def get_historical_ticks(instrument_id, start_time=None, end_time=None, limit=100):
+    """
+    获取历史tick数据
+    start_time/end_time: datetime对象或None
+    limit: 最多返回多少条记录
+    """
+    key = f"history:{instrument_id}"
+
+    if start_time and end_time:
+        # 转换为毫秒时间戳
+        start_ms = int(start_time.timestamp() * 1000)
+        end_ms = int(end_time.timestamp() * 1000)
+        # 按时间范围查询
+        results = r.zrangebyscore(key, start_ms, end_ms, withscores=True)
+    else:
+        # 获取最新N条
+        results = r.zrevrange(key, 0, limit-1, withscores=True)
+
+    ticks = []
+    for data, timestamp_ms in results:
+        tick = json.loads(data)
+        tick['redis_timestamp'] = timestamp_ms
+        ticks.append(tick)
+
+    return ticks
+
+# 3. 批量获取多个合约的最新行情
+def get_multiple_quotes(instrument_ids):
+    """批量获取最新行情"""
+    pipe = r.pipeline()
+    for instrument_id in instrument_ids:
+        pipe.get(instrument_id)
+
+    results = pipe.execute()
+    quotes = {}
+    for i, data in enumerate(results):
+        if data:
+            quotes[instrument_ids[i]] = json.loads(data)
+
+    return quotes
+
+# 4. 实时监控行情更新 (使用Redis PubSub - 需要额外配置)
+def subscribe_market_data(instrument_ids):
+    """订阅行情更新通知"""
+    pubsub = r.pubsub()
+    channels = [f"quote:{inst}" for inst in instrument_ids]
+    pubsub.subscribe(*channels)
+
+    for message in pubsub.listen():
+        if message['type'] == 'message':
+            print(f"收到行情: {message['channel']}")
+            data = json.loads(message['data'])
+            print(f"  价格: {data['last_price']}")
+
+# 使用示例
+if __name__ == "__main__":
+    # 获取rb2601最新行情
+    quote = get_latest_quote("rb2601")
+    if quote:
+        print(f"合约: {quote['instrument_id']}")
+        print(f"最新价: {quote['last_price']}")
+        print(f"时间: {quote['update_time']}")
+
+    # 获取最近1小时的历史数据
+    end_time = datetime.now()
+    start_time = end_time - timedelta(hours=1)
+    ticks = get_historical_ticks("rb2601", start_time, end_time)
+    print(f"获取到 {len(ticks)} 条历史tick数据")
+
+    # 批量获取多个合约
+    quotes = get_multiple_quotes(["rb2601", "i2501", "au2512"])
+    for inst_id, quote in quotes.items():
+        print(f"{inst_id}: {quote['last_price']}")
+```
+
+### Redis数据监控
+
+```bash
+# 监控Redis连接状态
+redis-cli INFO clients
+redis-cli INFO stats
+
+# 查看所有合约keys
+redis-cli KEYS "*" | grep -v "history:"
+
+# 查看历史数据keys
+redis-cli KEYS "history:*"
+
+# 监控写入性能
+redis-cli MONITOR | grep -E "(SET|ZADD)"
+
+# 检查内存使用
+redis-cli INFO memory
+
+# 清理测试数据
+redis-cli FLUSHDB  # 谨慎使用！
+```
+
+### Redis优化配置建议
+
+```bash
+# /etc/redis/redis.conf 优化建议
+
+# 1. 内存配置
+maxmemory 4gb
+maxmemory-policy allkeys-lru  # 内存不足时使用LRU策略
+
+# 2. 持久化配置 (根据需求选择)
+# RDB方式 - 快照持久化
+save 900 1
+save 300 10
+save 60 10000
+
+# AOF方式 - 更安全但性能略低
+appendonly yes
+appendfsync everysec
+
+# 3. 网络优化
+tcp-backlog 511
+timeout 300
+tcp-keepalive 300
+
+# 4. 性能优化
+# 禁用慢查询
+slowlog-log-slower-than 10000
+slowlog-max-len 128
+
+# 5. 安全配置
+bind 192.168.2.27
+requirepass your_password  # 建议生产环境设置密码
+```
+
+### Redis数据分析工具
+
+项目提供了多个Redis调试工具：
+
+```bash
+# 检查Redis连接和数据
+python3 check_redis.py
+
+# 调试Redis数据写入
+python3 debug_redis.py
+
+# 简单Redis测试
+python3 simple_redis_test.py
 ```
 
 ## 🧩 智能订阅管理机制
@@ -1001,11 +1432,17 @@ curl --include --no-buffer --header "Connection: Upgrade" \
 - 独立共享内存管理
 - 完整的错误处理机制
 
-### v2.0.0 (2025-09-10) ✅ 🔥
+### v2.0.0 (2025-10-24) ✅ 🔥
 - **多CTP连接架构** - 支持90+期货公司同时连接
 - **智能负载均衡** - 4种分发策略，25000+合约并发
 - **故障自动转移** - 连接断开自动迁移订阅
-- **Redis数据缓存** - 行情数据持久化存储
+- **Redis数据缓存** - 完整实现，支持String最新行情 + ZSet历史tick数据
+  - 实时数据存储（String）
+  - 历史时间序列（ZSet，10万条自动清理2天前数据）
+  - 线程安全连接池
+- **双协议支持** - 同时支持aid协议（QIFI体系）和action协议（兼容性）
+  - aid协议：长轮询 + 增量diff推送机制
+  - action协议：传统主动推送模式
 - **配置化管理** - JSON配置文件，灵活部署
 - **压力测试工具** - 多CTP系统专用测试客户端
 - **工业级稳定性** - 生产环境高可用架构
