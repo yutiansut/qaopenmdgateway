@@ -1,0 +1,92 @@
+{
+  "websocket_port": 7799,
+  "redis_host": "192.168.2.27",
+  "redis_port": 6379,
+  "load_balance_strategy": "connection_quality",
+  "health_check_interval": 30,
+  "maintenance_interval": 60,
+  "max_retry_count": 3,
+  "auto_failover": true,
+  "connections": [
+    {
+      "connection_id": "simnow_main",
+      "front_addr": "tcp://182.254.243.31:30011",
+      "broker_id": "9999",
+      "max_subscriptions": 500,
+      "priority": 1,
+      "enabled": true
+    },
+    {
+      "connection_id": "guangfa_telecom",
+      "front_addr": "tcp://101.230.102.231:51213",
+      "broker_id": "9000",
+      "max_subscriptions": 600,
+      "priority": 2,
+      "enabled": true
+    },
+    {
+      "connection_id": "guotai_telecom",
+      "front_addr": "tcp://101.231.185.59:61213",
+      "broker_id": "7090",
+      "max_subscriptions": 600,
+      "priority": 3,
+      "enabled": true
+    },
+    {
+      "connection_id": "huatai_telecom",
+      "front_addr": "tcp://114.94.12.97:41214",
+      "broker_id": "8080",
+      "max_subscriptions": 600,
+      "priority": 4,
+      "enabled": true
+    },
+    {
+      "connection_id": "zhongxin_telecom",
+      "front_addr": "tcp://ctp1-md1.citicsf.com:43213",
+      "broker_id": "66666",
+      "max_subscriptions": 600,
+      "priority": 5,
+      "enabled": true
+    },
+    {
+      "connection_id": "yide_telecom",
+      "front_addr": "tcp://101.226.253.41:41213",
+      "broker_id": "5060",
+      "max_subscriptions": 800,
+      "priority": 6,
+      "enabled": true
+    },
+    {
+      "connection_id": "guangda_telecom",
+      "front_addr": "tcp://101.231.162.58:41213",
+      "broker_id": "6000",
+      "max_subscriptions": 400,
+      "priority": 7,
+      "enabled": true
+    },
+    {
+      "connection_id": "guoji_telecom",
+      "front_addr": "tcp://180.168.102.193:41214",
+      "broker_id": "8090",
+      "max_subscriptions": 400,
+      "priority": 8,
+      "enabled": true
+    },
+    {
+      "connection_id": "guolian_telecom",
+      "front_addr": "tcp://58.215.212.146:41213",
+      "broker_id": "7010",
+      "max_subscriptions": 400,
+      "priority": 9,
+      "enabled": true
+    },
+    {
+      "connection_id": "haitong_telecom",
+      "front_addr": "tcp://180.168.212.75:41313",
+      "broker_id": "8000",
+      "max_subscriptions": 300,
+      "priority": 10,
+      "enabled": true
+    }
+  ]
+}

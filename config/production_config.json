@@ -1,0 +1,37 @@
+{
+  "broker_id": "your_broker_id",
+  "websocket_port": 7799,
+  "redis_host": "192.168.1.100", 
+  "redis_port": 6379,
+  "load_balance_strategy": "connection_quality",
+  "health_check_interval": 30,
+  "maintenance_interval": 60,
+  "max_retry_count": 3,
+  "auto_failover": true,
+  "connections": [
+    {
+      "connection_id": "primary_front",
+      "front_addr": "tcp://your_primary_front_addr:port",
+      "broker_id": "your_broker_id",
+      "max_subscriptions": 800,
+      "priority": 1,
+      "enabled": true
+    },
+    {
+      "connection_id": "backup_front",
+      "front_addr": "tcp://your_backup_front_addr:port",
+      "broker_id": "your_broker_id", 
+      "max_subscriptions": 800,
+      "priority": 2,
+      "enabled": true
+    },
+    {
+      "connection_id": "emergency_front",
+      "front_addr": "tcp://your_emergency_front_addr:port",
+      "broker_id": "your_broker_id",
+      "max_subscriptions": 500,
+      "priority": 3,
+      "enabled": false
+    }
+  ]
+}

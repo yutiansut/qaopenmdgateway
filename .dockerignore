@@ -1,0 +1,43 @@
+# 编译生成的文件
+obj/
+bin/market_data_server
+*.o
+
+# CTP flow文件
+ctpflow/
+ctp_flow/
+ctp_flow_*/
+
+# 日志文件
+logs/
+*.log
+
+# 备份文件
+backup/
+*.tar.gz
+*.zip
+
+# 开发工具文件
+.git/
+.gitignore
+.vscode/
+.idea/
+
+# 文档文件(保留README.md)
+*.md
+!README.md
+
+# 测试文件
+test_*
+*_test.py
+*.py
+!broker_parser.py
+
+# 临时文件
+*.tmp
+*.swp
+*~
+
+# OS文件
+.DS_Store
+Thumbs.db

@@ -1,0 +1,724 @@
+{
+  "websocket_port": 7799,
+  "redis_host": "192.168.2.27",
+  "redis_port": 6379,
+  "load_balance_strategy": "connection_quality",
+  "health_check_interval": 30,
+  "maintenance_interval": 60,
+  "max_retry_count": 3,
+  "auto_failover": true,
+  "connections": [
+    {
+      "connection_id": "simnow_main",
+      "front_addr": "tcp://182.254.243.31:30011",
+      "broker_id": "9999",
+      "max_subscriptions": 500,
+      "priority": 1,
+      "enabled": true
+    },
+    {
+      "connection_id": "bohai_telecom",
+      "front_addr": "tcp://116.228.31.198:43213",
+      "broker_id": "4080",
+      "max_subscriptions": 300,
+      "priority": 2,
+      "enabled": true
+    },
+    {
+      "connection_id": "baocheng_telecom",
+      "front_addr": "tcp://222.68.181.33:31213",
+      "broker_id": "0001",
+      "max_subscriptions": 300,
+      "priority": 3,
+      "enabled": true
+    },
+    {
+      "connection_id": "caixin_telecom",
+      "front_addr": "tcp://101.226.253.65:41313",
+      "broker_id": "0320",
+      "max_subscriptions": 250,
+      "priority": 4,
+      "enabled": true
+    },
+    {
+      "connection_id": "changjiang_telecom",
+      "front_addr": "tcp://61.183.150.151:41213",
+      "broker_id": "4300",
+      "max_subscriptions": 250,
+      "priority": 5,
+      "enabled": true
+    },
+    {
+      "connection_id": "shouchuang_telecom",
+      "front_addr": "tcp://101.230.15.17:41215",
+      "broker_id": "8016",
+      "max_subscriptions": 250,
+      "priority": 6,
+      "enabled": true
+    },
+    {
+      "connection_id": "donghang_telecom",
+      "front_addr": "tcp://116.236.239.140:42213",
+      "broker_id": "7070",
+      "max_subscriptions": 300,
+      "priority": 7,
+      "enabled": true
+    },
+    {
+      "connection_id": "donghai_telecom",
+      "front_addr": "tcp://61.132.99.125:41213",
+      "broker_id": "4700",
+      "max_subscriptions": 250,
+      "priority": 8,
+      "enabled": true
+    },
+    {
+      "connection_id": "dongxing_telecom",
+      "front_addr": "tcp://116.228.171.152:31213",
+      "broker_id": "8899",
+      "max_subscriptions": 250,
+      "priority": 9,
+      "enabled": true
+    },
+    {
+      "connection_id": "dongzheng_telecom",
+      "front_addr": "tcp://180.169.85.204:61213",
+      "broker_id": "3040",
+      "max_subscriptions": 300,
+      "priority": 10,
+      "enabled": true
+    },
+    {
+      "connection_id": "dalu_telecom",
+      "front_addr": "tcp://101.230.208.65:62111",
+      "broker_id": "8888",
+      "max_subscriptions": 300,
+      "priority": 11,
+      "enabled": true
+    },
+    {
+      "connection_id": "dongfangcaifu_telecom",
+      "front_addr": "tcp://58.33.60.99:51213",
+      "broker_id": "9099",
+      "max_subscriptions": 250,
+      "priority": 12,
+      "enabled": true
+    },
+    {
+      "connection_id": "donghua_telecom",
+      "front_addr": "tcp://114.80.55.205:55216",
+      "broker_id": "0099",
+      "max_subscriptions": 250,
+      "priority": 13,
+      "enabled": true
+    },
+    {
+      "connection_id": "fangzheng_telecom",
+      "front_addr": "tcp://101.230.85.33:21413",
+      "broker_id": "0034",
+      "max_subscriptions": 400,
+      "priority": 14,
+      "enabled": true
+    },
+    {
+      "connection_id": "funeng_telecom",
+      "front_addr": "tcp://114.80.104.193:61213",
+      "broker_id": "0614",
+      "max_subscriptions": 250,
+      "priority": 15,
+      "enabled": true
+    },
+    {
+      "connection_id": "gangxin_telecom",
+      "front_addr": "tcp://101.226.254.129:41213",
+      "broker_id": "0233",
+      "max_subscriptions": 200,
+      "priority": 16,
+      "enabled": true
+    },
+    {
+      "connection_id": "gelin_telecom",
+      "front_addr": "tcp://180.169.99.43:41213",
+      "broker_id": "6080",
+      "max_subscriptions": 200,
+      "priority": 17,
+      "enabled": true
+    },
+    {
+      "connection_id": "guangfa_telecom",
+      "front_addr": "tcp://101.230.102.231:51213",
+      "broker_id": "9000",
+      "max_subscriptions": 600,
+      "priority": 18,
+      "enabled": true
+    },
+    {
+      "connection_id": "guangjin_telecom",
+      "front_addr": "tcp://114.80.54.236:41213",
+      "broker_id": "3003",
+      "max_subscriptions": 250,
+      "priority": 19,
+      "enabled": true
+    },
+    {
+      "connection_id": "guangda_telecom",
+      "front_addr": "tcp://101.231.162.58:41213",
+      "broker_id": "6000",
+      "max_subscriptions": 400,
+      "priority": 20,
+      "enabled": true
+    },
+    {
+      "connection_id": "guoneng_telecom",
+      "front_addr": "tcp://101.226.253.117:22000",
+      "broker_id": "0127",
+      "max_subscriptions": 200,
+      "priority": 21,
+      "enabled": true
+    },
+    {
+      "connection_id": "guoxin_telecom",
+      "front_addr": "tcp://101.226.250.171:31213",
+      "broker_id": "1010",
+      "max_subscriptions": 300,
+      "priority": 22,
+      "enabled": true
+    },
+    {
+      "connection_id": "guoji_telecom",
+      "front_addr": "tcp://180.168.102.193:41214",
+      "broker_id": "8090",
+      "max_subscriptions": 400,
+      "priority": 23,
+      "enabled": true
+    },
+    {
+      "connection_id": "guolian_telecom",
+      "front_addr": "tcp://58.215.212.146:41213",
+      "broker_id": "7010",
+      "max_subscriptions": 400,
+      "priority": 24,
+      "enabled": true
+    },
+    {
+      "connection_id": "guotou_telecom",
+      "front_addr": "tcp://114.94.76.121:41313",
+      "broker_id": "4500",
+      "max_subscriptions": 400,
+      "priority": 25,
+      "enabled": true
+    },
+    {
+      "connection_id": "guofu_telecom",
+      "front_addr": "tcp://101.230.178.177:53313",
+      "broker_id": "2016",
+      "max_subscriptions": 300,
+      "priority": 26,
+      "enabled": true
+    },
+    {
+      "connection_id": "guojin_telecom",
+      "front_addr": "tcp://116.228.52.242:11215",
+      "broker_id": "5010",
+      "max_subscriptions": 250,
+      "priority": 27,
+      "enabled": true
+    },
+    {
+      "connection_id": "guomao_telecom",
+      "front_addr": "tcp://114.80.225.10:41213",
+      "broker_id": "0187",
+      "max_subscriptions": 300,
+      "priority": 28,
+      "enabled": true
+    },
+    {
+      "connection_id": "guoxin2_telecom",
+      "front_addr": "tcp://180.166.37.142:43213",
+      "broker_id": "8030",
+      "max_subscriptions": 300,
+      "priority": 29,
+      "enabled": true
+    },
+    {
+      "connection_id": "guotai_telecom",
+      "front_addr": "tcp://101.231.185.59:61213",
+      "broker_id": "7090",
+      "max_subscriptions": 600,
+      "priority": 30,
+      "enabled": true
+    },
+    {
+      "connection_id": "guosheng_telecom",
+      "front_addr": "tcp://101.226.254.16:61213",
+      "broker_id": "190228",
+      "max_subscriptions": 250,
+      "priority": 31,
+      "enabled": true
+    },
+    {
+      "connection_id": "guoyuan_telecom",
+      "front_addr": "tcp://114.94.16.137:41213",
+      "broker_id": "0043",
+      "max_subscriptions": 400,
+      "priority": 32,
+      "enabled": true
+    },
+    {
+      "connection_id": "huabao_telecom",
+      "front_addr": "tcp://180.166.58.211:41253",
+      "broker_id": "5300",
+      "max_subscriptions": 200,
+      "priority": 33,
+      "enabled": true
+    },
+    {
+      "connection_id": "huatai_telecom",
+      "front_addr": "tcp://114.94.12.97:41214",
+      "broker_id": "8080",
+      "max_subscriptions": 600,
+      "priority": 34,
+      "enabled": true
+    },
+    {
+      "connection_id": "haitong_telecom",
+      "front_addr": "tcp://180.168.212.75:41313",
+      "broker_id": "8000",
+      "max_subscriptions": 300,
+      "priority": 35,
+      "enabled": true
+    },
+    {
+      "connection_id": "haizheng_telecom",
+      "front_addr": "tcp://Ctpjqdx1.hicend.com:41215",
+      "broker_id": "9040",
+      "max_subscriptions": 200,
+      "priority": 36,
+      "enabled": true
+    },
+    {
+      "connection_id": "hongyuan_telecom",
+      "front_addr": "tcp://180.169.112.52:42213",
+      "broker_id": "1080",
+      "max_subscriptions": 400,
+      "priority": 37,
+      "enabled": true
+    },
+    {
+      "connection_id": "huaxi_telecom",
+      "front_addr": "tcp://ctp1-md-isp1.hxqh168.com:41168",
+      "broker_id": "16333",
+      "max_subscriptions": 200,
+      "priority": 38,
+      "enabled": true
+    },
+    {
+      "connection_id": "hehe_telecom",
+      "front_addr": "tcp://101.226.250.3:35213",
+      "broker_id": "01027",
+      "max_subscriptions": 200,
+      "priority": 40,
+      "enabled": true
+    },
+    {
+      "connection_id": "huaxin_telecom",
+      "front_addr": "tcp://180.169.70.181:31213",
+      "broker_id": "10001",
+      "max_subscriptions": 250,
+      "priority": 41,
+      "enabled": true
+    },
+    {
+      "connection_id": "hengli_telecom",
+      "front_addr": "tcp://101.226.255.139:41213",
+      "broker_id": "0339",
+      "max_subscriptions": 200,
+      "priority": 42,
+      "enabled": true
+    },
+    {
+      "connection_id": "hengtai_telecom",
+      "front_addr": "tcp://114.80.55.177:41215",
+      "broker_id": "3010",
+      "max_subscriptions": 250,
+      "priority": 43,
+      "enabled": true
+    },
+    {
+      "connection_id": "hongye_telecom",
+      "front_addr": "tcp://101.230.118.177:49213",
+      "broker_id": "3678",
+      "max_subscriptions": 250,
+      "priority": 44,
+      "enabled": true
+    },
+    {
+      "connection_id": "huaan_telecom",
+      "front_addr": "tcp://180.166.37.178:41215",
+      "broker_id": "6020",
+      "max_subscriptions": 300,
+      "priority": 45,
+      "enabled": true
+    },
+    {
+      "connection_id": "huishang_telecom",
+      "front_addr": "tcp://223.247.96.71:41343",
+      "broker_id": "8888",
+      "max_subscriptions": 500,
+      "priority": 46,
+      "enabled": true
+    },
+    {
+      "connection_id": "jinyuan_telecom",
+      "front_addr": "tcp://101.95.8.170:41215",
+      "broker_id": "0089",
+      "max_subscriptions": 200,
+      "priority": 47,
+      "enabled": true
+    },
+    {
+      "connection_id": "jianxin_telecom",
+      "front_addr": "tcp://101.230.192.97:42213",
+      "broker_id": "95533",
+      "max_subscriptions": 250,
+      "priority": 48,
+      "enabled": true
+    },
+    {
+      "connection_id": "jicheng_telecom",
+      "front_addr": "tcp://114.80.54.109:41213",
+      "broker_id": "888888",
+      "max_subscriptions": 200,
+      "priority": 49,
+      "enabled": true
+    },
+    {
+      "connection_id": "jinshi_telecom",
+      "front_addr": "tcp://58.33.28.52:55313",
+      "broker_id": "0193",
+      "max_subscriptions": 200,
+      "priority": 50,
+      "enabled": true
+    },
+    {
+      "connection_id": "maike_telecom",
+      "front_addr": "tcp://101.230.144.99:51213",
+      "broker_id": "1025",
+      "max_subscriptions": 200,
+      "priority": 51,
+      "enabled": true
+    },
+    {
+      "connection_id": "minsheng_telecom",
+      "front_addr": "tcp://211.95.60.42:41213",
+      "broker_id": "5118",
+      "max_subscriptions": 300,
+      "priority": 52,
+      "enabled": true
+    },
+    {
+      "connection_id": "pingan_telecom",
+      "front_addr": "tcp://101.226.254.58:41213",
+      "broker_id": "5200",
+      "max_subscriptions": 250,
+      "priority": 53,
+      "enabled": true
+    },
+    {
+      "connection_id": "qisheng_telecom",
+      "front_addr": "tcp://101.226.250.217:42213",
+      "broker_id": "7000",
+      "max_subscriptions": 200,
+      "priority": 54,
+      "enabled": true
+    },
+    {
+      "connection_id": "qianhai_telecom",
+      "front_addr": "tcp://101.226.250.240:41215",
+      "broker_id": "0182",
+      "max_subscriptions": 250,
+      "priority": 55,
+      "enabled": true
+    },
+    {
+      "connection_id": "nanhua_telecom",
+      "front_addr": "tcp://180.169.30.167:41215",
+      "broker_id": "8050",
+      "max_subscriptions": 300,
+      "priority": 56,
+      "enabled": true
+    },
+    {
+      "connection_id": "shenwan_telecom",
+      "front_addr": "tcp://180.168.212.55:31213",
+      "broker_id": "88888",
+      "max_subscriptions": 250,
+      "priority": 57,
+      "enabled": true
+    },
+    {
+      "connection_id": "shangzhong_telecom",
+      "front_addr": "tcp://180.168.214.244:21213",
+      "broker_id": "8070",
+      "max_subscriptions": 600,
+      "priority": 58,
+      "enabled": true
+    },
+    {
+      "connection_id": "shangdong_telecom",
+      "front_addr": "tcp://101.230.134.209:42213",
+      "broker_id": "00001",
+      "max_subscriptions": 250,
+      "priority": 59,
+      "enabled": true
+    },
+    {
+      "connection_id": "shengda_telecom",
+      "front_addr": "tcp://122.224.130.74:42213",
+      "broker_id": "88888",
+      "max_subscriptions": 600,
+      "priority": 60,
+      "enabled": true
+    },
+    {
+      "connection_id": "tongguan_telecom",
+      "front_addr": "tcp://116.228.31.210:51213",
+      "broker_id": "4050",
+      "max_subscriptions": 300,
+      "priority": 61,
+      "enabled": true
+    },
+    {
+      "connection_id": "tongxin_telecom",
+      "front_addr": "tcp://180.166.13.41:41213",
+      "broker_id": "9099",
+      "max_subscriptions": 250,
+      "priority": 62,
+      "enabled": true
+    },
+    {
+      "connection_id": "tianhong_telecom",
+      "front_addr": "tcp://101.230.185.210:42213",
+      "broker_id": "4020",
+      "max_subscriptions": 200,
+      "priority": 63,
+      "enabled": true
+    },
+    {
+      "connection_id": "tianfu_telecom",
+      "front_addr": "tcp://101.230.185.226:51213",
+      "broker_id": "0173",
+      "max_subscriptions": 150,
+      "priority": 64,
+      "enabled": true
+    },
+    {
+      "connection_id": "wukuang_telecom",
+      "front_addr": "tcp://101.231.127.50:42213",
+      "broker_id": "8899",
+      "max_subscriptions": 300,
+      "priority": 65,
+      "enabled": true
+    },
+    {
+      "connection_id": "xianfeng_telecom",
+      "front_addr": "tcp://101.230.143.201:33443",
+      "broker_id": "6050",
+      "max_subscriptions": 300,
+      "priority": 66,
+      "enabled": true
+    },
+    {
+      "connection_id": "xinding_telecom",
+      "front_addr": "tcp://180.166.206.64:41213",
+      "broker_id": "0021",
+      "max_subscriptions": 150,
+      "priority": 67,
+      "enabled": true
+    },
+    {
+      "connection_id": "xingzheng_telecom",
+      "front_addr": "tcp://180.166.11.39:11616",
+      "broker_id": "4200",
+      "max_subscriptions": 250,
+      "priority": 68,
+      "enabled": true
+    },
+    {
+      "connection_id": "xingye_telecom",
+      "front_addr": "tcp://114.80.104.121:51213",
+      "broker_id": "8000",
+      "max_subscriptions": 200,
+      "priority": 69,
+      "enabled": true
+    },
+    {
+      "connection_id": "xinshiji_telecom",
+      "front_addr": "tcp://114.80.54.248:41313",
+      "broker_id": "9070",
+      "max_subscriptions": 250,
+      "priority": 70,
+      "enabled": true
+    },
+    {
+      "connection_id": "xinhu_telecom",
+      "front_addr": "tcp://101.226.249.18:51215",
+      "broker_id": "6090",
+      "max_subscriptions": 200,
+      "priority": 71,
+      "enabled": true
+    },
+    {
+      "connection_id": "xibu_telecom",
+      "front_addr": "tcp://101.230.104.170:41215",
+      "broker_id": "9090",
+      "max_subscriptions": 150,
+      "priority": 72,
+      "enabled": true
+    },
+    {
+      "connection_id": "yide_telecom",
+      "front_addr": "tcp://101.226.253.41:41213",
+      "broker_id": "5060",
+      "max_subscriptions": 800,
+      "priority": 73,
+      "enabled": true
+    },
+    {
+      "connection_id": "yinhe_telecom",
+      "front_addr": "tcp://180.166.103.21:55213",
+      "broker_id": "4040",
+      "max_subscriptions": 350,
+      "priority": 74,
+      "enabled": true
+    },
+    {
+      "connection_id": "zijin_telecom",
+      "front_addr": "tcp://101.230.80.85:41214",
+      "broker_id": "0001",
+      "max_subscriptions": 250,
+      "priority": 75,
+      "enabled": true
+    },
+    {
+      "connection_id": "zheshang_telecom",
+      "front_addr": "tcp://180.166.1.17:41313",
+      "broker_id": "6010",
+      "max_subscriptions": 400,
+      "priority": 76,
+      "enabled": true
+    },
+    {
+      "connection_id": "zhengxin_telecom",
+      "front_addr": "tcp://101.226.253.82:41215",
+      "broker_id": "7030",
+      "max_subscriptions": 300,
+      "priority": 77,
+      "enabled": true
+    },
+    {
+      "connection_id": "zhongjin_telecom",
+      "front_addr": "tcp://101.226.253.150:41213",
+      "broker_id": "0268",
+      "max_subscriptions": 300,
+      "priority": 78,
+      "enabled": true
+    },
+    {
+      "connection_id": "zhongtai_telecom",
+      "front_addr": "tcp://114.94.17.33:51213",
+      "broker_id": "7080",
+      "max_subscriptions": 250,
+      "priority": 79,
+      "enabled": true
+    },
+    {
+      "connection_id": "zhongxin_telecom",
+      "front_addr": "tcp://ctp1-md1.citicsf.com:43213",
+      "broker_id": "66666",
+      "max_subscriptions": 600,
+      "priority": 80,
+      "enabled": true
+    },
+    {
+      "connection_id": "zhongxinjiantou_telecom",
+      "front_addr": "tcp://61.186.254.135:42213",
+      "broker_id": "9080",
+      "max_subscriptions": 300,
+      "priority": 81,
+      "enabled": true
+    },
+    {
+      "connection_id": "zhongrong_telecom",
+      "front_addr": "tcp://114.80.55.165:51213",
+      "broker_id": "6868",
+      "max_subscriptions": 150,
+      "priority": 82,
+      "enabled": true
+    },
+    {
+      "connection_id": "zhonghui_telecom",
+      "front_addr": "tcp://101.226.253.37:42213",
+      "broker_id": "0274",
+      "max_subscriptions": 600,
+      "priority": 83,
+      "enabled": true
+    },
+    {
+      "connection_id": "zhongcai_telecom",
+      "front_addr": "tcp://180.168.159.227:51213",
+      "broker_id": "0155",
+      "max_subscriptions": 250,
+      "priority": 84,
+      "enabled": true
+    },
+    {
+      "connection_id": "xianrong_telecom",
+      "front_addr": "tcp://183.71.251.187:41413",
+      "broker_id": "0018",
+      "max_subscriptions": 250,
+      "priority": 85,
+      "enabled": true
+    },
+    {
+      "connection_id": "zhongyin_telecom",
+      "front_addr": "tcp://101.230.108.193:21213",
+      "broker_id": "5040",
+      "max_subscriptions": 250,
+      "priority": 86,
+      "enabled": true
+    },
+    {
+      "connection_id": "zhongjincaifu_telecom",
+      "front_addr": "tcp://101.230.142.52:41213",
+      "broker_id": "7050",
+      "max_subscriptions": 250,
+      "priority": 87,
+      "enabled": true
+    },
+    {
+      "connection_id": "zhongzhou_telecom",
+      "front_addr": "tcp://101.226.253.188:41313",
+      "broker_id": "1299",
+      "max_subscriptions": 250,
+      "priority": 88,
+      "enabled": true
+    },
+    {
+      "connection_id": "zhaoshang_telecom",
+      "front_addr": "tcp://180.166.65.121:41213",
+      "broker_id": "8060",
+      "max_subscriptions": 350,
+      "priority": 89,
+      "enabled": true
+    },
+    {
+      "connection_id": "zhongliang_telecom",
+      "front_addr": "tcp://114.94.14.128:57213",
+      "broker_id": "8888",
+      "max_subscriptions": 200,
+      "priority": 90,
+      "enabled": true
+    }
+  ]
+}

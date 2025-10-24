@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  # Redis服务 - 用于行情数据缓存
+  redis:
+    image: redis:6.2-alpine
+    container_name: qactpmd-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - qactpmd-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # QuantAxis多CTP行情网关
+  qactpmdgateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: qactpmd-gateway
+    restart: unless-stopped
+    ports:
+      - "7799:7799"  # WebSocket端口
+    volumes:
+      # 配置文件挂载
+      - ./config:/opt/quantaxis/qactpmdgateway/config:ro
+      # 日志文件持久化
+      - ./logs:/opt/quantaxis/qactpmdgateway/logs
+      # CTP flow文件持久化
+      - ./ctpflow:/opt/quantaxis/qactpmdgateway/ctpflow
+      # 备份目录
+      - ./backup:/opt/quantaxis/qactpmdgateway/backup
+    environment:
+      # 环境变量配置
+      - TZ=Asia/Shanghai
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - LOG_LEVEL=INFO
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - qactpmd-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7799/", "||", "exit", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # 监控和管理界面 (可选)
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: qactpmd-portainer
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - qactpmd-network
+    profiles:
+      - monitoring
+
+volumes:
+  redis_data:
+    driver: local
+  portainer_data:
+    driver: local
+
+networks:
+  qactpmd-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
